@@ -1,0 +1,26 @@
+
+.mewidgetbox {
+	height: 380px !important;
+	border: 1px solid #dddddd;
+	padding: 10px !important;
+}
+
+.mewidgetbox h3 {
+	text-align: center;
+	margin-bottom: 15px !important;
+}
+
+.mewidgetcontent {
+    overflow-y: scroll;
+    overflow-x: hidden;
+	height: 330px;
+}
+
+.mewidgetsingle {
+	border-bottom: 1px solid #ddd;
+	padding: 5px 0 5px 0;
+}
+
+.mewidgetsingle a {
+	color:#c3512f !important;
+}
