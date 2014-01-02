@@ -69,48 +69,60 @@ class mewidget extends WP_Widget {
 
     //Return events at $city
     public function get_events($country,$city,$keymeetup,$text) {
-        $base = 'https://api.meetup.com';
-        $parameters = array('key' => $keymeetup, 'sign' => 'true', 'city' => $city, 'country' => $country, 'text' => $text, 'order' => 'time');
-        $path = '/2/open_events';
+        $result = wp_cache_get( 'events_mewidget', 'events_mewidget_grp' );
+        if ( false === $result ) {
+            $base = 'https://api.meetup.com';
+            $parameters = array('key' => $keymeetup, 'sign' => 'true', 'city' => $city, 'country' => $country, 'text' => $text, 'order' => 'time');
+            $path = '/2/open_events';
 
-        $url = $base . $path . '?' . http_build_query($parameters);
+            $url = $base . $path . '?' . http_build_query($parameters);
 
-        $ch = curl_init();
-        curl_setopt($ch, CURLOPT_URL, $url);
-        curl_setopt($ch, CURLOPT_HTTPHEADER, array("Accept-Charset: utf-8"));
-        // curl_setopt($ch, CURLOPT_HTTPHEADER, array("charset: utf-8"));
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        $content = curl_exec($ch);
+            $ch = curl_init();
+            curl_setopt($ch, CURLOPT_URL, $url);
+            curl_setopt($ch, CURLOPT_HTTPHEADER, array("Accept-Charset: utf-8"));
+            // curl_setopt($ch, CURLOPT_HTTPHEADER, array("charset: utf-8"));
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+            $content = curl_exec($ch);
 
-        if (curl_errno($ch)) {
-            $error = curl_error($ch);
+            if (curl_errno($ch)) {
+                $error = curl_error($ch);
+                curl_close($ch);
+                throw new Exception("Fallo al recuperar  '" . $url . "' por el error ' " . $error . "'.");
+            }
+
+            $response = json_decode($content);
+            $status = curl_getinfo($ch, CURLINFO_HTTP_CODE);
             curl_close($ch);
-            throw new Exception("Fallo al recuperar  '" . $url . "' por el error ' " . $error . "'.");
+
+            if ($status == 200 && isset($response) != false)
+            {
+                $eventos = '<div class="mewidgetbox">';
+                $eventos .= '<h3 class="widgettitle">Próximos eventos</h3>';
+                $eventos .= '<div class="mewidgetcontent">';
+
+                $events =  $response->results;
+
+                foreach ($events as $event) {
+                    $eventos .= '<div class="mewidgetsingle">';
+                    $eventos .= (!empty($event->event_url))? '<a href="'.$event->event_url.'" target="_blank">'.$event->name.'</a>' : '<strong>'.$event->name.'</strong>';
+                    $eventos .= (!empty($event->venue->address_1))? '<br>Lugar: '.$event->venue->address_1 : '';
+                    $eventos .= (!empty($event->venue->city))? ' - '.$event->venue->city : '';
+                    $eventos .= (!empty($event->time))? '<br>Fecha: ' . date('d/m/Y H:i', $event->time / 1000) : '';
+                    $eventos .= '</div>';
+
+               }
+               $eventos .= '</div>';
+               $eventos .= '</div>';
+            }
+            else {
+                $eventos = '';
+            }
+
+            $expire = 60 * 60 * 24; //Lo almacenamos en cache por un día
+            wp_cache_set( 'events_mewidget', $eventos, 'events_mewidget_grp', $expire );
         }
-
-        $response = json_decode($content);
-        $status = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-        curl_close($ch);
-
-         if ($status == 200 && isset($response) != false)
-        {
-            $eventos = '<div class="mewidgetbox">';
-            $eventos .= '<h3 class="widgettitle">Próximos eventos</h3>';
-            $eventos .= '<div class="mewidgetcontent">';
-
-            $events =  $response->results;
-
-            foreach ($events as $event) {
-                $eventos .= '<div class="mewidgetsingle">';
-                $eventos .= (!empty($event->event_url))? '<a href="'.$event->event_url.'" target="_blank">'.$event->name.'</a>' : '<strong>'.$event->name.'</strong>';
-                $eventos .= (!empty($event->venue->address_1))? '<br>Lugar: '.$event->venue->address_1 : '';
-                $eventos .= (!empty($event->venue->city))? ' - '.$event->venue->city : '';
-                $eventos .= (!empty($event->time))? '<br>Fecha: ' . date('d/m/Y H:i', $event->time / 1000) : '';
-                $eventos .= '</div>';
-
-           }
-           $eventos .= '</div>';
-           $eventos .= '</div>';
+        else{
+            $eventos = $result;
         }
 
         return $eventos;
