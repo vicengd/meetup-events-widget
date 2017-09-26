@@ -1,14 +1,28 @@
 <?php
-/*
-Plugin Name: Meetup Events Widget
-Plugin URI: http://vicentegarcia.com
-Description: A simple widget for displaying open events from meetup.com
-Author: Vicente García
-Author URI: http://vicentegarcia.com
-Author email: v@vicentegarcia.com
-Version: 1.0
-License: GPLv2
-*/
+/**
+ *  Meetup Events Widget
+ *
+ * @link              https://vicentegarcia.com
+ * @since             1.0.0
+ * @package           Meetup_Events_Widget
+ *
+ * @wordpress-plugin
+ * Plugin Name:       Meetup Events Widget
+ * Plugin URI:        https://es.wordpress.org/plugins/meetup-events-widget/
+ * Description:       A simple widget for displaying open events from meetup.com
+ * Version:           1.1.3
+ * Author:            Vicente Garcia
+ * Author URI:        https://vicentegarcia.com
+ * License:           GPL-2.0+
+ * License URI:       http://www.gnu.org/licenses/gpl-2.0.txt
+ * Text Domain:       meetup-events-widget
+ * Domain Path:       /languages
+ */
+
+// If this file is called directly, abort.
+if ( ! defined( 'WPINC' ) ) {
+	die;
+}
 
 /**
  * Function to register widget

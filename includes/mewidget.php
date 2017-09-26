@@ -1,14 +1,31 @@
 <?php
-/*
-Plugin Name: Meetup Events Widget
-Plugin URI: http://vicentegarcia.com
-Description: A simple widget for displaying open events from meetup.com
-Author: Vicente García
-Author URI: http://vicentegarcia.com
-Author email: v@vicentegarcia.com
-Version: 1.0
-License: GPLv2
-*/
+/**
+ * The file that defines the core plugin class
+ *
+ * A class definition that includes attributes and functions used across both the
+ * public-facing side of the site and the admin area.
+ *
+ * @link       https://vicentegarcia.com
+ * @since      1.0.0
+ *
+ * @package    Meetup_Events_Widget
+ * @subpackage Meetup_Events_Widget/inc
+ */
+
+/**
+ * The core plugin class.
+ *
+ * This is used to define internationalization, admin-specific hooks, and
+ * public-facing site hooks.
+ *
+ * Also maintains the unique identifier of this plugin as well as the current
+ * version of the plugin.
+ *
+ * @since      1.0.0
+ * @package    Meetup_Events_Widget
+ * @subpackage Meetup_Events_Widget/inc
+ * @author     Vicente Garcia <contacto@vicentegarcia.com>
+ */
 
 class mewidget extends WP_Widget {
     // Constructor function
@@ -17,7 +34,7 @@ class mewidget extends WP_Widget {
         $mewidget_optionss = array('classname' => 'mewidget', 'description' => "Un sencillo widget para mostrar los eventos de tu ciudad y alrededores extraidos desde meetup.com" );
         parent::__construct('mewidget','Meetup Events Widget', $mewidget_optionss);
 
-        wp_enqueue_style( $this->widgetName.'-styles', plugins_url( 'mewidget.css', __FILE__ ));
+        wp_enqueue_style( 'mewidget-styles', plugins_url( 'mewidget.css', __FILE__ ));
     }
 
     // Function that displays the widget content on the site frontend.
@@ -50,19 +67,25 @@ class mewidget extends WP_Widget {
 
     function form($instance){
         // Formulario de opciones del Widget, que aparece cuando añadimos el Widget a una Sidebar
+        $mew_country = empty ($instance['mew_country']) ? '' : $instance['mew_country'];
+        $mew_city = empty ($instance['mew_city']) ? '' : $instance['mew_city'];
+        $key_meetup = empty ($instance['key_meetup']) ? '' : $instance['key_meetup'];
+        $mew_text = empty ($instance['mew_text']) ? '' : $instance['mew_text'];
+
+
         ?>
          <p>
             <label for="<?php echo $this->get_field_id('mew_country'); ?>">Código país (ejp: es)</label>
-            <input class="widefat" id="<?php echo $this->get_field_id('mew_country'); ?>" name="<?php echo $this->get_field_name('mew_country'); ?>" type="text" value="<?php echo esc_attr($instance["mew_country"]); ?>" />
+            <input class="widefat" id="<?php echo $this->get_field_id('mew_country'); ?>" name="<?php echo $this->get_field_name('mew_country'); ?>" type="text" value="<?php echo esc_attr($mew_country); ?>" />
             <p></p>
             <label for="<?php echo $this->get_field_id('mew_city'); ?>">Ciudad (ejp: madrid)</label>
-            <input class="widefat" id="<?php echo $this->get_field_id('mew_city'); ?>" name="<?php echo $this->get_field_name('mew_city'); ?>" type="text" value="<?php echo esc_attr($instance["mew_city"]); ?>" />
+            <input class="widefat" id="<?php echo $this->get_field_id('mew_city'); ?>" name="<?php echo $this->get_field_name('mew_city'); ?>" type="text" value="<?php echo esc_attr($mew_city); ?>" />
             <p></p>
             <label for="<?php echo $this->get_field_id('key_meetup'); ?>">Clave (key meetup.com)</label>
-            <input class="widefat" id="<?php echo $this->get_field_id('key_meetup'); ?>" name="<?php echo $this->get_field_name('key_meetup'); ?>" type="text" value="<?php echo esc_attr($instance["key_meetup"]); ?>" />
+            <input class="widefat" id="<?php echo $this->get_field_id('key_meetup'); ?>" name="<?php echo $this->get_field_name('key_meetup'); ?>" type="text" value="<?php echo esc_attr($key_meetup); ?>" />
             <p></p>
             <label for="<?php echo $this->get_field_id('mew_text'); ?>">Términos relacionados con los eventos (separados por espacios)</label>
-            <input class="widefat" id="<?php echo $this->get_field_id('mew_text'); ?>" name="<?php echo $this->get_field_name('mew_text'); ?>" type="text" value="<?php echo esc_attr($instance["mew_text"]); ?>" />
+            <input class="widefat" id="<?php echo $this->get_field_id('mew_text'); ?>" name="<?php echo $this->get_field_name('mew_text'); ?>" type="text" value="<?php echo esc_attr($mew_text); ?>" />
         </p>
          <?php
     }
